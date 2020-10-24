@@ -1,0 +1,39 @@
+<idea-plugin>
+    <id>com.intellj.plugin.SpringBootBannerPlugin</id>
+    <name>Spring Boot Banner Generator</name>
+    <vendor email="mukeshdevnp@gmail.com" url="https://mukeshdev.com.np">MM</vendor>
+
+    <description>
+        <![CDATA[
+    Generate Spring Boot Banner (Spring Boot Banner Generator)
+
+    A Simple plugin use to generate banner for spring boot project.
+
+    Just right click folder, goto new and click generate banner.
+    Enter text and select Font to generate banner with given font.
+    banner.txt file will be generate in selected folder.
+
+    Plugin Icon: https://www.iconfinder.com/bitfreak86
+    Ascii art banners generated using: https://github.com/lalyos/jfiglet
+
+    ]]>
+    </description>
+
+    <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+    </extensions>
+
+    <actions>
+
+        <!-- Add your actions here -->
+        <group id="np.com.mukeshdev" text="Generate Banner">
+            <add-to-group group-id="NewGroup" anchor="after" relative-to-action="NewDir"/>
+            <action class="np.com.mukeshdev.GenerateBanner" id="np.com.mukeshdev.GenerateBanner"
+                    text="Generate Banner" icon="BannerIcons.bannerIcon"/>
+        </group>
+    </actions>
+</idea-plugin>
