@@ -1,24 +1,24 @@
 package np.com.mukeshdev.service;
 
-import com.intellij.openapi.components.PersistentStateComponent;
-import com.intellij.openapi.components.State;
-import com.intellij.openapi.components.Storage;
-import com.intellij.openapi.components.StoragePathMacros;
+import com.intellij.openapi.components.*;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 
 @State(
         name = "BannerSettingServiceComponent",
-        storages = {@Storage(StoragePathMacros.WORKSPACE_FILE)}
+        storages = {@Storage(StoragePathMacros.WORKSPACE_FILE)},
+        defaultStateAsResource = true
 )
 public class BannerSettingService implements PersistentStateComponent<BannerSettingService> {
 
     public String defaultBannerText;
     public String defaultBannerFonts;
 
+    @Override
     public BannerSettingService getState() {
         return this;
     }
 
+    @Override
     public void loadState(BannerSettingService state) {
         XmlSerializerUtil.copyBean(state, this);
     }

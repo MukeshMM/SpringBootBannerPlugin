@@ -14,7 +14,6 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.Computable;
-import com.intellij.openapi.util.Pair;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
@@ -29,6 +28,8 @@ public class GenerateBanner extends AnAction {
     private static final Logger log = Logger.getInstance(GenerateBanner.class);
 
     public static final String BANNER_TXT_FILE_NAME = "banner.txt";
+
+    // Todo save user setting in intellj (example: text and font)
     BannerSettingService bannerSettingService = new BannerSettingService();
 
     private static final NotificationGroup BALLOON_GROUP = new NotificationGroup(
@@ -41,9 +42,9 @@ public class GenerateBanner extends AnAction {
 
         try {
 
-            Pair<String, Boolean> bannerTextAndIsDefaultPair = takeUserTextInput();
+            String bannerText = takeUserTextInput(anActionEvent);
 
-            if (bannerTextAndIsDefaultPair.first == null) {
+            if (bannerText == null) {
                 return;
             }
 
@@ -53,22 +54,20 @@ public class GenerateBanner extends AnAction {
                 return;
             }
 
-            boolean fileCreated = createBannerFileWithSelectedFont(anActionEvent, bannerTextAndIsDefaultPair, selectedBannerFonts);
+            boolean fileCreated = createBannerFileWithSelectedFont(anActionEvent, bannerText, selectedBannerFonts);
             if (!fileCreated)
                 return;
 
-            saveSettingAsDefaultIfRequired(bannerTextAndIsDefaultPair, selectedBannerFonts);
+            saveSettingAsDefaultIfRequired(bannerText, selectedBannerFonts);
 
         } catch (Exception ex) {
             log.error(ex);
         }
     }
 
-    private void saveSettingAsDefaultIfRequired(Pair<String, Boolean> bannerTextAndIsDefaultPair, String selectedBannerFonts) {
-        if (bannerTextAndIsDefaultPair.second != null && bannerTextAndIsDefaultPair.second) {
-            bannerSettingService.setDefaultBannerFonts(selectedBannerFonts);
-            bannerSettingService.setDefaultBannerText(bannerTextAndIsDefaultPair.first);
-        }
+    private void saveSettingAsDefaultIfRequired(String bannerText, String selectedBannerFonts) {
+        bannerSettingService.setDefaultBannerFonts(selectedBannerFonts);
+        bannerSettingService.setDefaultBannerText(bannerText);
     }
 
     private String takeUserFontsInput() {
@@ -84,17 +83,20 @@ public class GenerateBanner extends AnAction {
         );
     }
 
-    private Pair<String, Boolean> takeUserTextInput() {
+    private String takeUserTextInput(AnActionEvent anActionEvent) {
 
-        return Messages.showInputDialogWithCheckBox(
-                "Banner text", "Banner Text",
-                "Make this my default banner", false, true,
-                null, bannerSettingService.getDefaultBannerText(), null
+        return Messages.showInputDialog(
+                anActionEvent.getProject(),
+                "Banner Text",
+                "Make this my default banner",
+                null,
+                bannerSettingService.getDefaultBannerText(),
+                null
         );
     }
 
 
-    private boolean createBannerFileWithSelectedFont(@NotNull AnActionEvent anActionEvent, Pair<String, Boolean> bannerTextAndIsDefaultPair,
+    private boolean createBannerFileWithSelectedFont(@NotNull AnActionEvent anActionEvent, String bannerText,
                                                      String selectedBannerFonts) {
 
         try (
@@ -132,9 +134,9 @@ public class GenerateBanner extends AnAction {
             String bannerAsciiArt;
 
             if (fontsInputStream != null) {
-                bannerAsciiArt = FigletFont.convertOneLine(fontsInputStream, bannerTextAndIsDefaultPair.first);
+                bannerAsciiArt = FigletFont.convertOneLine(fontsInputStream, bannerText);
             } else {
-                bannerAsciiArt = FigletFont.convertOneLine(bannerTextAndIsDefaultPair.first);
+                bannerAsciiArt = FigletFont.convertOneLine(bannerText);
             }
 
             String finalBannerAsciiArt = bannerAsciiArt;
