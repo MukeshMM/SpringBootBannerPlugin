@@ -47,4 +47,8 @@ banner.txt file will be generate in selected folder.
                     text="Generate Banner" icon="BannerIcons.bannerIcon"/>
         </group>
     </actions>
+
+    <idea-version since-build="145"/>
+
+    <change-notes>A Simple plugin use to generate banner for spring boot project.</change-notes>
 </idea-plugin>
